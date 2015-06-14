@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">Foodies</string>
+
+    <string name="title_drawer_search">Search</string>
+    <string name="title_drawer_promo">Promo</string>
+    <string name="title_drawer_home">Home</string>
+    <string name="nearby">Nearby</string>
+    <string name="favourite">My Favorite</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_example">Toast</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_restaurant_info">RestaurantInfo</string>
+
+    <string name="title_info_menu">Menu</string>
+    <string name="title_info_promo">Promotion</string>
+    <string name="title_info_location">Location</string>
+
+    <string name="hello_world">Hello world!</string>
+</resources>
