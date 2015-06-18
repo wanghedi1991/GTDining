@@ -48,7 +48,7 @@ public class RestaurantInfo extends ActionBarActivity implements ActionBar.TabLi
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-
+        actionBar.setTitle(getIntent().getStringExtra(FoodLocAdapter.restaurant));
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);

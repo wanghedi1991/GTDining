@@ -63,8 +63,8 @@ public class MainActivity extends ActionBarActivity
                 new FoodLocationEntry("Chick03", "Promo03", R.drawable.chick)};
         nearbyList.setLayoutManager(new LinearLayoutManager(this));
         favoriteList.setLayoutManager(new LinearLayoutManager(this));
-        FoodLocAdapter nearbyAdapter = new FoodLocAdapter(entries0);
-        FoodLocAdapter favoriteAdapter = new FoodLocAdapter(entries1);
+        FoodLocAdapter nearbyAdapter = new FoodLocAdapter(entries0,this);
+        FoodLocAdapter favoriteAdapter = new FoodLocAdapter(entries1,this);
         nearbyList.setAdapter(nearbyAdapter);
         favoriteList.setAdapter(favoriteAdapter);
         nearbyList.setItemAnimator(new DefaultItemAnimator());

@@ -1,5 +1,7 @@
 package edu.gatech.cs.foodies;
 
+import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,17 +14,30 @@ import android.widget.TextView;
  */
 public class FoodLocAdapter extends RecyclerView.Adapter<FoodLocAdapter.ViewHolder> {
     private FoodLocationEntry[] entries;
-
-    public FoodLocAdapter(FoodLocationEntry[] entries) {
+    private Context context;
+    public static String restaurant = "RESTAURANT_NAME";
+    public FoodLocAdapter(FoodLocationEntry[] entries, Context context) {
         this.entries = entries;
+        this.context = context;
     }
 
     @Override
     public FoodLocAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View entryLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.food_place_entry, null);
+        final View entryLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.food_place_entry, null);
+        entryLayoutView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(context, RestaurantInfo.class);
+                i.putExtra(restaurant, ((TextView)entryLayoutView.findViewById(R.id.entry_title)).getText().toString().trim());
+                context.startActivity(i);
+            }
+        });
         ViewHolder viewHolder = new ViewHolder(entryLayoutView);
         return viewHolder;
     }
+
+
+
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
