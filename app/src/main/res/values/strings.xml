@@ -18,6 +18,7 @@
     <string name="title_info_menu">Menu</string>
     <string name="title_info_promo">Promotion</string>
     <string name="title_info_location">Location</string>
-
+    <string name="search">Search</string>
+    <string name="promo">Promo</string>
     <string name="hello_world">Hello world!</string>
 </resources>

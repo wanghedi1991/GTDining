@@ -8,6 +8,9 @@ import android.support.v4.app.FragmentManager;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -45,6 +48,27 @@ public class MainActivity extends ActionBarActivity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+
+        RecyclerView nearbyList = (RecyclerView) findViewById(R.id.nearby_list);
+        RecyclerView favoriteList = (RecyclerView) findViewById(R.id.favorite_list);
+
+        FoodLocationEntry entries0[] = {new FoodLocationEntry("Panda00", "Promo00", R.drawable.panda),
+                new FoodLocationEntry("Panda01", "Promo01", R.drawable.panda),
+                new FoodLocationEntry("Panda02", "Promo02", R.drawable.panda),
+                new FoodLocationEntry("Panda03", "Promo03", R.drawable.panda)};
+
+        FoodLocationEntry entries1[] = {new FoodLocationEntry("Chick00", "Promo00", R.drawable.chick),
+                new FoodLocationEntry("Chick01", "Promo01", R.drawable.chick),
+                new FoodLocationEntry("Chick02", "Promo02", R.drawable.chick),
+                new FoodLocationEntry("Chick03", "Promo03", R.drawable.chick)};
+        nearbyList.setLayoutManager(new LinearLayoutManager(this));
+        favoriteList.setLayoutManager(new LinearLayoutManager(this));
+        FoodLocAdapter nearbyAdapter = new FoodLocAdapter(entries0);
+        FoodLocAdapter favoriteAdapter = new FoodLocAdapter(entries1);
+        nearbyList.setAdapter(nearbyAdapter);
+        favoriteList.setAdapter(favoriteAdapter);
+        nearbyList.setItemAnimator(new DefaultItemAnimator());
+        favoriteList.setItemAnimator(new DefaultItemAnimator());
     }
 
     @Override
