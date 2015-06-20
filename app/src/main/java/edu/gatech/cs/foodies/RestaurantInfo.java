@@ -10,31 +10,19 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 
 public class RestaurantInfo extends ActionBarActivity implements ActionBar.TabListener {
 
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-     */
     SectionsPagerAdapter mSectionsPagerAdapter;
-
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
     ViewPager mViewPager;
+    String resName;
+    int imageUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +36,9 @@ public class RestaurantInfo extends ActionBarActivity implements ActionBar.TabLi
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-        actionBar.setTitle(getIntent().getStringExtra(FoodLocAdapter.restaurant));
+        resName = getIntent().getStringExtra(FoodLocAdapter.RESTAURANT_NAME);
+        imageUri = getIntent().getIntExtra(FoodLocAdapter.RESTAURANT_URI, -1);
+        actionBar.setTitle( resName );
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
@@ -128,6 +118,9 @@ public class RestaurantInfo extends ActionBarActivity implements ActionBar.TabLi
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
+            if( position == 0 ){
+                return MenuFragment.newInstance(resName, imageUri);
+            }
             return PlaceholderFragment.newInstance(position + 1);
         }
 

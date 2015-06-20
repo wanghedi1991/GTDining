@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 /**
@@ -15,7 +16,9 @@ import android.widget.TextView;
 public class FoodLocAdapter extends RecyclerView.Adapter<FoodLocAdapter.ViewHolder> {
     private FoodLocationEntry[] entries;
     private Context context;
-    public static String restaurant = "RESTAURANT_NAME";
+    public static String RESTAURANT_NAME = "RESTAURANT_NAME";
+    public static String RESTAURANT_URI = "RESTAURANT_URI";
+
     public FoodLocAdapter(FoodLocationEntry[] entries, Context context) {
         this.entries = entries;
         this.context = context;
@@ -23,24 +26,23 @@ public class FoodLocAdapter extends RecyclerView.Adapter<FoodLocAdapter.ViewHold
 
     @Override
     public FoodLocAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        final View entryLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.food_place_entry, null);
-        entryLayoutView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(context, RestaurantInfo.class);
-                i.putExtra(restaurant, ((TextView)entryLayoutView.findViewById(R.id.entry_title)).getText().toString().trim());
-                context.startActivity(i);
-            }
-        });
+        final View entryLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.food_place_entry, parent, false);
         ViewHolder viewHolder = new ViewHolder(entryLayoutView);
         return viewHolder;
     }
 
 
-
-
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(ViewHolder holder, final int position) {
+        holder.getItemLayoutView().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(context, RestaurantInfo.class);
+                i.putExtra(RESTAURANT_NAME, entries[position].getTitle() );
+                i.putExtra(RESTAURANT_URI, entries[position].getImageUrl());
+                context.startActivity(i);
+            }
+        });
         holder.title.setText(entries[position].getTitle());
         holder.promo.setText(entries[position].getPromo());
         holder.icon.setImageResource(entries[position].getImageUrl());
@@ -53,15 +55,21 @@ public class FoodLocAdapter extends RecyclerView.Adapter<FoodLocAdapter.ViewHold
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
+        View itemLayoutView;
         public TextView title;
         public ImageView icon;
         public TextView promo;
 
         public ViewHolder(View itemLayoutView) {
             super(itemLayoutView);
+            this.itemLayoutView = itemLayoutView;
             title = (TextView) itemLayoutView.findViewById(R.id.entry_title);
             icon = (ImageView) itemLayoutView.findViewById(R.id.entry_icon);
             promo = (TextView) itemLayoutView.findViewById(R.id.entry_promo);
+        }
+
+        public View getItemLayoutView() {
+            return itemLayoutView;
         }
     }
 }
