@@ -1,0 +1,86 @@
+<!-- Example javascript to use the Json apis provided by dining halls -->
+
+<html lang="en">
+    <head>
+	<meta charset="utf-8" />
+	<title>JSON Sample</title>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    </head>
+    <body>
+	<h1> Buildings Info</h1>
+	<div id="buildingInfo"></div>
+
+	<h1> DatabaseVersions Info</h1>
+	<div id="dbInfo"></div>
+
+	<h1> Location Info</h1>
+	<div id="locInfo"></div>
+
+	<h1> Tag Info</h1>
+	<div id="tagInfo"></div>
+
+	<script>
+	$.getJSON('http://test-diningdata.itg.gatech.edu:80/api/Buildings', function(data) {
+            var output="<ul>";
+            for (var i in data) {
+		output+="<li>" + data[i].BuildingID + " " + data[i].Name +"</li>";
+            }
+            output+="</ul>";
+            document.getElementById("buildingInfo").innerHTML=output;
+	});
+
+	$.getJSON('http://test-diningdata.itg.gatech.edu:80/api/DatabaseVersions', 
+	    function(data) {
+		var output="<ul>";
+		output+="<li>" + data.ID + " " + data.version +"</li>";
+		output+="</ul>";
+		document.getElementById("dbInfo").innerHTML=output;
+	    }
+	);
+	
+	$.getJSON('http://test-diningdata.itg.gatech.edu:80/api/DiningLocations', 
+	    function(data) {
+		var output="<ul>";
+		for (var i in data) {
+		    output +="<li>" + data[i].Building.BuildingID + " " 
+			+ data[i].Building.Name + " <br> ";
+		    for (var j in data[i].Exceptions){
+			output += data[i].Exceptions[j].Exception.StartDateTime
+			    + data[i].Exceptions[j].Exception.EndDateTime + " <br> ";
+		    }
+			+ data[i].Exceptions + " <br>";
+		    for (var j in data[i].HoursOfOperations){
+			output += data[i].HoursOfOperations[j].Close.Day + " "
+			    + data[i].HoursOfOperations[j].Close.Time + " "
+			    + data[i].HoursOfOperations[j].Open.Day + " "
+			    + data[i].HoursOfOperations[j].Open.Time + " <br> ";
+			
+		    }
+		    output += "<br><br>";
+		    output += data[i].ID + "<br>" + data[i].Name + "<br>" 
+			+ data[i].Description + "<br>" + data[i].BuildingID + "<br>"
+			+ data[i].LocationDetails + "<br>" + data[i].Latitude + "<br>"
+			+ data[i].Longitude + data[i].PromotionMessage + "<br>"
+			+ data[i].PromotionStartDate + "<br>" + data[i].PromotionEndDate;
+		    output += "<br> </li>";
+		}
+		output+="</ul>";
+		document.getElementById("locInfo").innerHTML=output;
+	    }
+	);
+	
+	$.getJSON('http://test-diningdata.itg.gatech.edu:80/api/Tags', 
+	    function(data) {
+		var output="<ul>";
+		for (var i in data) {
+		    output+="<li>" + data[i].TagID + " " + data[i].Name +"</li>";
+		}
+		output+="</ul>";
+		document.getElementById("tagInfo").innerHTML=output;
+	    }
+	    
+	);
+
+	</script>
+    </body>
+</html>
