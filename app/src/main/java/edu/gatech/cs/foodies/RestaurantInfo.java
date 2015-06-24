@@ -17,7 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 
-public class RestaurantInfo extends ActionBarActivity implements ActionBar.TabListener {
+public class RestaurantInfo extends ActionBarActivity implements ActionBar.TabListener, MenuFragment.OnFragmentInteractionListener {
 
     SectionsPagerAdapter mSectionsPagerAdapter;
     ViewPager mViewPager;
@@ -102,6 +102,11 @@ public class RestaurantInfo extends ActionBarActivity implements ActionBar.TabLi
 
     @Override
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+    }
+
+    @Override
+    public void onFragmentInteraction(String id) {
+
     }
 
     /**
