@@ -7,13 +7,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 /**
  * Created by Hedi Wang on 2015/6/18.
  */
-public class FoodLocAdapter extends RecyclerView.Adapter<FoodLocAdapter.ViewHolder> {
+public class FoodLocAdapter extends RecyclerView.Adapter<FoodLocAdapter.FoodLocViewHolder> {
     private FoodLocationEntry[] entries;
     private Context context;
     public static String RESTAURANT_NAME = "RESTAURANT_NAME";
@@ -25,15 +24,15 @@ public class FoodLocAdapter extends RecyclerView.Adapter<FoodLocAdapter.ViewHold
     }
 
     @Override
-    public FoodLocAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        final View entryLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.food_place_entry, parent, false);
-        ViewHolder viewHolder = new ViewHolder(entryLayoutView);
-        return viewHolder;
+    public FoodLocViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View entryLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.food_place_entry, parent, false);
+        FoodLocViewHolder foodLocViewHolder = new FoodLocViewHolder(entryLayoutView);
+        return foodLocViewHolder;
     }
 
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, final int position) {
+    public void onBindViewHolder(FoodLocViewHolder holder, final int position) {
         holder.getItemLayoutView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -53,14 +52,14 @@ public class FoodLocAdapter extends RecyclerView.Adapter<FoodLocAdapter.ViewHold
         return entries.length;
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class FoodLocViewHolder extends RecyclerView.ViewHolder {
 
         View itemLayoutView;
-        public TextView title;
-        public ImageView icon;
-        public TextView promo;
+        TextView title;
+        ImageView icon;
+        TextView promo;
 
-        public ViewHolder(View itemLayoutView) {
+        public FoodLocViewHolder(View itemLayoutView) {
             super(itemLayoutView);
             this.itemLayoutView = itemLayoutView;
             title = (TextView) itemLayoutView.findViewById(R.id.entry_title);
