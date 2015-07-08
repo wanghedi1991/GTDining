@@ -7,18 +7,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import java.util.ArrayList;
 
 /**
  * Created by Hedi Wang on 2015/6/18.
  */
 public class FoodLocAdapter extends RecyclerView.Adapter<FoodLocAdapter.FoodLocViewHolder> {
-    private FoodLocationEntry[] entries;
+    private ArrayList<FoodLocationEntry> entries;
     private Context context;
+    public static String RESTAURANT_ID = "RESTAURANT_ID";
     public static String RESTAURANT_NAME = "RESTAURANT_NAME";
     public static String RESTAURANT_URI = "RESTAURANT_URI";
+    public static String RESTAUNRANT_LOCATION = "RESTAUNRANT_LOCATION";
 
-    public FoodLocAdapter(FoodLocationEntry[] entries, Context context) {
+    public FoodLocAdapter(ArrayList<FoodLocationEntry> entries, Context context) {
         this.entries = entries;
         this.context = context;
     }
@@ -33,42 +38,52 @@ public class FoodLocAdapter extends RecyclerView.Adapter<FoodLocAdapter.FoodLocV
 
     @Override
     public void onBindViewHolder(FoodLocViewHolder holder, final int position) {
-        holder.getItemLayoutView().setOnClickListener(new View.OnClickListener() {
+        holder.linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(context, RestaurantInfo.class);
-                i.putExtra(RESTAURANT_NAME, entries[position].getTitle() );
-                i.putExtra(RESTAURANT_URI, entries[position].getImageUrl());
+                Intent i = new Intent(context, RestaurantInfoActivity.class);
+                i.putExtra(RESTAURANT_ID, entries.get(position).getId());
+                i.putExtra(RESTAURANT_NAME, entries.get(position).getName());
+                i.putExtra(RESTAURANT_URI, entries.get(position).getImageUrl());
+                i.putExtra(RESTAUNRANT_LOCATION, false);
                 context.startActivity(i);
             }
         });
-        holder.title.setText(entries[position].getTitle());
-        holder.promo.setText(entries[position].getPromo());
-        holder.icon.setImageResource(entries[position].getImageUrl());
+        holder.title.setText(entries.get(position).getName());
+        holder.icon.setImageResource(entries.get(position).getImageUrl());
+        holder.goToLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(context, RestaurantInfoActivity.class);
+                i.putExtra(RESTAURANT_ID, entries.get(position).getId());
+                i.putExtra(RESTAURANT_NAME, entries.get(position).getName());
+                i.putExtra(RESTAURANT_URI, entries.get(position).getImageUrl());
+                i.putExtra(RESTAUNRANT_LOCATION, true);
+                context.startActivity(i);
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
-        return entries.length;
+        return entries.size();
     }
 
     public static class FoodLocViewHolder extends RecyclerView.ViewHolder {
 
-        View itemLayoutView;
+        LinearLayout linearLayout;
         TextView title;
         ImageView icon;
-        TextView promo;
+        ImageView goToLocation;
 
         public FoodLocViewHolder(View itemLayoutView) {
             super(itemLayoutView);
-            this.itemLayoutView = itemLayoutView;
+            linearLayout = (LinearLayout) itemLayoutView.findViewById(R.id.food_place_entry);
             title = (TextView) itemLayoutView.findViewById(R.id.entry_title);
             icon = (ImageView) itemLayoutView.findViewById(R.id.entry_icon);
-            promo = (TextView) itemLayoutView.findViewById(R.id.entry_promo);
+            goToLocation = (ImageView) itemLayoutView.findViewById(R.id.food_loc_button);
         }
 
-        public View getItemLayoutView() {
-            return itemLayoutView;
-        }
+
     }
 }

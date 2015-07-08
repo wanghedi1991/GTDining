@@ -17,12 +17,10 @@ import android.widget.TextView;
 
 public class MenuFragment extends Fragment implements AbsListView.OnItemClickListener {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+
     private static final String IMAGE_URI = "IMAGE_URI";
     private static final String NAME = "NAME";
 
-    // TODO: Rename and change types of parameters
     private String resName;
     private int imageUri;
 
@@ -39,7 +37,6 @@ public class MenuFragment extends Fragment implements AbsListView.OnItemClickLis
      */
     private MenuEntryAdapter mAdapter;
 
-    // TODO: Rename and change types of parameters
     public static MenuFragment newInstance(String name, int imageUri) {
         MenuFragment fragment = new MenuFragment();
         Bundle args = new Bundle();

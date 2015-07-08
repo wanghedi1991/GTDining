@@ -1,39 +1,50 @@
 package edu.gatech.cs.foodies;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
-import android.widget.ArrayAdapter;
-import android.widget.TextView;
+import android.widget.Button;
+import android.widget.Toast;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
 
 
 public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
-    /**
-     * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
-     */
-    private NavigationDrawerFragment mNavigationDrawerFragment;
 
-    /**
-     * Used to store the last screen title. For use in {@link #restoreActionBar()}.
-     */
+    private NavigationDrawerFragment mNavigationDrawerFragment;
+    private RecyclerView restaurantList;
+    //    private RecyclerView favoriteList;
     private CharSequence mTitle;
+    Context context;
+    ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,26 +60,42 @@ public class MainActivity extends ActionBarActivity
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
-        RecyclerView nearbyList = (RecyclerView) findViewById(R.id.nearby_list);
-        RecyclerView favoriteList = (RecyclerView) findViewById(R.id.favorite_list);
+        restaurantList = (RecyclerView) findViewById(R.id.nearby_list);
+//        favoriteList = (RecyclerView) findViewById(R.id.favorite_list);
 
-        FoodLocationEntry entries0[] = {new FoodLocationEntry("Panda00", "Promo00", R.drawable.panda),
-                new FoodLocationEntry("Panda01", "Promo01", R.drawable.panda),
-                new FoodLocationEntry("Panda02", "Promo02", R.drawable.panda),
-                new FoodLocationEntry("Panda03", "Promo03", R.drawable.panda)};
+//        FoodLocationEntry entries0[] = {new FoodLocationEntry("Panda00", "Promo00", R.drawable.panda),
+//                new FoodLocationEntry("Panda01", "Promo01", R.drawable.panda),
+//                new FoodLocationEntry("Panda02", "Promo02", R.drawable.panda),
+//                new FoodLocationEntry("Panda03", "Promo03", R.drawable.panda)};
 
-        FoodLocationEntry entries1[] = {new FoodLocationEntry("Chick00", "Promo00", R.drawable.chick),
-                new FoodLocationEntry("Chick01", "Promo01", R.drawable.chick),
-                new FoodLocationEntry("Chick02", "Promo02", R.drawable.chick),
-                new FoodLocationEntry("Chick03", "Promo03", R.drawable.chick)};
-        nearbyList.setLayoutManager(new LinearLayoutManager(this));
-        favoriteList.setLayoutManager(new LinearLayoutManager(this));
-        FoodLocAdapter nearbyAdapter = new FoodLocAdapter(entries0,this);
-        FoodLocAdapter favoriteAdapter = new FoodLocAdapter(entries1,this);
-        nearbyList.setAdapter(nearbyAdapter);
-        favoriteList.setAdapter(favoriteAdapter);
-        nearbyList.setItemAnimator(new DefaultItemAnimator());
-        favoriteList.setItemAnimator(new DefaultItemAnimator());
+
+        ArrayList<RestaurantEntry> test = new ArrayList<>();
+        test.add(new RestaurantEntry(3, "Test", "test"));
+        test.add(new RestaurantEntry(4, "Test1", "test1"));
+        restaurantList.setLayoutManager(new LinearLayoutManager(this));
+//        favoriteList.setLayoutManager(new LinearLayoutManager(this));
+//        FoodLocAdapter nearbyAdapter = new FoodLocAdapter(entries0,this);
+//        FoodLocAdapter favoriteAdapter = new FoodLocAdapter(entries1, this);
+//        favoriteList.setAdapter(favoriteAdapter);
+        restaurantList.setItemAnimator(new DefaultItemAnimator());
+//        favoriteList.setItemAnimator(new DefaultItemAnimator());
+        Button button = (Button) findViewById(R.id.search_button);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+        context = this;
+        progressDialog = new ProgressDialog(this, ProgressDialog.STYLE_SPINNER);
+        ConnectivityManager connMgr = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnected()) {
+            new GetRestaurantsTask().execute();
+        } else {
+            Toast.makeText(this, "No Internet Access. Please Check Your Connection", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -123,51 +150,87 @@ public class MainActivity extends ActionBarActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.refresh) {
+            ConnectivityManager connMgr = (ConnectivityManager)
+                    getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+            if (networkInfo != null && networkInfo.isConnected()) {
+                new GetRestaurantsTask().execute();
+            } else {
+                Toast.makeText(this, "No Internet Access. Please Check Your Connection", Toast.LENGTH_SHORT).show();
+            }
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
 
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
+    private class GetRestaurantsTask extends AsyncTask<String, Void, String> {
 
-        public PlaceholderFragment() {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog.setMessage("Loading data....");
+            progressDialog.show();
         }
 
         @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            return rootView;
+        protected String doInBackground(String... urls) {
+            try {
+                return getRestaurants("https://boiling-mesa-3124.herokuapp.com/dining/?format=json");
+            } catch (Exception e) {
+                return "Unable to get restaurants information";
+            }
         }
 
         @Override
-        public void onAttach(Activity activity) {
-            super.onAttach(activity);
-            ((MainActivity) activity).onSectionAttached(
-                    getArguments().getInt(ARG_SECTION_NUMBER));
+        protected void onPostExecute(String s) {
+            try {
+                JSONArray jsonArray = new JSONArray(s);
+                ArrayList<FoodLocationEntry> restaurants = new ArrayList<>();
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    FoodLocationEntry temp = new FoodLocationEntry();
+                    JSONObject jsonObject = (JSONObject) jsonArray.get(i);
+                    temp.setId(jsonObject.getInt("restaurantID"));
+                    temp.setName(jsonObject.getString("restaurantName"));
+                    temp.setOwner(jsonObject.getString("owner"));
+                    restaurants.add(temp);
+                }
+                FoodLocAdapter adapter = new FoodLocAdapter(restaurants, context);
+                progressDialog.dismiss();
+                restaurantList.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        private String getRestaurants(String urlString) throws IOException {
+            InputStream is = null;
+            try {
+                URL url = new URL(urlString);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(10000 /* milliseconds */);
+                conn.setConnectTimeout(15000 /* milliseconds */);
+                conn.setRequestMethod("GET");
+                conn.setDoInput(true);
+                // Starts the query
+                conn.connect();
+                int response = conn.getResponseCode();
+                is = conn.getInputStream();
+                StringBuilder builder = new StringBuilder();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    builder.append(line);
+                }
+                return builder.toString();
+            } finally {
+                if (is != null) {
+                    is.close();
+                }
+            }
         }
     }
-
 }
