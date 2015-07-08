@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -69,6 +70,7 @@ public class RestaurantInfoActivity extends ActionBarActivity implements MenuFra
         entry = new FoodLocationEntry();
         actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        actionBar.setDisplayHomeAsUpEnabled(true);
         context = this;
 
         Intent intent = getIntent();
@@ -96,17 +98,18 @@ public class RestaurantInfoActivity extends ActionBarActivity implements MenuFra
     }
 
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_restaurant_info, menu);
-        return true;
-    }
-
+    //    @Override
+//    public boolean onCreateOptionsMenu(Menu menu) {
+//        getMenuInflater().inflate(R.menu.menu_restaurant_info, menu);
+//        return true;
+//    }
+//
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.action_settings) {
+        if (id == R.id.home) {
+            NavUtils.navigateUpFromSameTask(this);
             return true;
         }
 
@@ -139,7 +142,7 @@ public class RestaurantInfoActivity extends ActionBarActivity implements MenuFra
         public Fragment getItem(int position) {
             if (position == 0) {
                 if (menuFragment == null) {
-                    menuFragment = MenuFragment.newInstance(entry.getName(), entry.getImageUrl());
+                    menuFragment = MenuFragment.newInstance(entry.getId());
                 }
                 return menuFragment;
             } else {

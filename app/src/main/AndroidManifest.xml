@@ -32,6 +32,7 @@
         <activity
             android:name=".RestaurantInfoActivity"
             android:label="@string/title_activity_restaurant_info"
+            android:parentActivityName="edu.gatech.cs.foodies.MainActivity"
             android:screenOrientation="portrait" />
 
         <meta-data
@@ -40,7 +41,9 @@
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="@string/google_maps_key" />
-
+        <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value="edu.gatech.cs.foodies.MainActivity" />
     </application>
 
 </manifest>
