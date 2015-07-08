@@ -29,10 +29,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
  * create an instance of this fragment.
  */
 public class LocationFragment extends Fragment {
-    public static final String RESTAURANT_ADDRESS = "RESTAURANT_ADDRESS";
-    public static final String RESTAURANT_PHONE = "RESTAURANT_PHONE";
-    public static final String RESTAURANT_LATITUDE = "RESTAURANT_LATITUDE";
-    public static final String RESTAURANT_LONGITUDE = "RESTAURANT_LONGITUDE";
 
     private Context context;
     private String address;
@@ -45,10 +41,10 @@ public class LocationFragment extends Fragment {
         LocationFragment fragment = new LocationFragment();
         Bundle args = new Bundle();
         fragment.setContext(context);
-        args.putString(RESTAURANT_ADDRESS, address);
-        args.putString(RESTAURANT_PHONE, phone);
-        args.putDouble(RESTAURANT_LATITUDE, latitude);
-        args.putDouble(RESTAURANT_LONGITUDE, longitude);
+        args.putString(Constants.RESTAURANT_ADDRESS, address);
+        args.putString(Constants.RESTAURANT_PHONE, phone);
+        args.putDouble(Constants.RESTAURANT_LATITUDE, latitude);
+        args.putDouble(Constants.RESTAURANT_LONGITUDE, longitude);
         return fragment;
     }
 
@@ -69,9 +65,9 @@ public class LocationFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             Bundle args = getArguments();
-            address = args.getString(RESTAURANT_ADDRESS);
-            phone = args.getString(RESTAURANT_PHONE);
-            latLng = new LatLng(args.getDouble(RESTAURANT_LATITUDE), args.getDouble(RESTAURANT_LONGITUDE));
+            address = args.getString(Constants.RESTAURANT_ADDRESS);
+            phone = args.getString(Constants.RESTAURANT_PHONE);
+            latLng = new LatLng(args.getDouble(Constants.RESTAURANT_LATITUDE), args.getDouble(Constants.RESTAURANT_LONGITUDE));
         }
     }
 

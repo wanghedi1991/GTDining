@@ -22,8 +22,6 @@ import android.widget.TextView;
 public class MenuFragment extends Fragment {
 
 
-    private static final String RESTAURANT_ID = "RESTAURANT_ID";
-
     private int id;
     private WebView webView;
 
@@ -41,7 +39,7 @@ public class MenuFragment extends Fragment {
     public static MenuFragment newInstance(int id) {
         MenuFragment fragment = new MenuFragment();
         Bundle args = new Bundle();
-        args.putInt(RESTAURANT_ID, id);
+        args.putInt(Constants.RESTAURANT_ID, id);
         fragment.setArguments(args);
         return fragment;
     }
@@ -58,7 +56,7 @@ public class MenuFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            id = getArguments().getInt(RESTAURANT_ID);
+            id = getArguments().getInt(Constants.RESTAURANT_ID);
         }
 
 

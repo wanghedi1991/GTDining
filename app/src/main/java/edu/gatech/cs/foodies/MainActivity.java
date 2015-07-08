@@ -41,7 +41,6 @@ public class MainActivity extends ActionBarActivity
 
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private RecyclerView restaurantList;
-    //    private RecyclerView favoriteList;
     private CharSequence mTitle;
     Context context;
     ProgressDialog progressDialog;
@@ -56,22 +55,13 @@ public class MainActivity extends ActionBarActivity
         mTitle = getTitle();
 
         // Set up the drawer.
-        mNavigationDrawerFragment.setUp(
-                R.id.navigation_drawer,
-                (DrawerLayout) findViewById(R.id.drawer_layout));
-
+        DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mNavigationDrawerFragment.setUp(R.id.navigation_drawer, drawerLayout);
+        drawerLayout.closeDrawers();
         restaurantList = (RecyclerView) findViewById(R.id.nearby_list);
 //        favoriteList = (RecyclerView) findViewById(R.id.favorite_list);
 
-//        FoodLocationEntry entries0[] = {new FoodLocationEntry("Panda00", "Promo00", R.drawable.panda),
-//                new FoodLocationEntry("Panda01", "Promo01", R.drawable.panda),
-//                new FoodLocationEntry("Panda02", "Promo02", R.drawable.panda),
-//                new FoodLocationEntry("Panda03", "Promo03", R.drawable.panda)};
 
-
-        ArrayList<RestaurantEntry> test = new ArrayList<>();
-        test.add(new RestaurantEntry(3, "Test", "test"));
-        test.add(new RestaurantEntry(4, "Test1", "test1"));
         restaurantList.setLayoutManager(new LinearLayoutManager(this));
 //        favoriteList.setLayoutManager(new LinearLayoutManager(this));
 //        FoodLocAdapter nearbyAdapter = new FoodLocAdapter(entries0,this);
@@ -121,25 +111,20 @@ public class MainActivity extends ActionBarActivity
         }
     }
 
-    public void restoreActionBar() {
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setTitle(mTitle);
-    }
+//    public void restoreActionBar() {
+//        ActionBar actionBar = getSupportActionBar();
+//        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+//        actionBar.setDisplayShowTitleEnabled(true);
+//        actionBar.setTitle(mTitle);
+//    }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (!mNavigationDrawerFragment.isDrawerOpen()) {
-            // Only show items in the action bar relevant to this screen
-            // if the drawer is not showing. Otherwise, let the drawer
-            // decide what to show in the action bar.
-            getMenuInflater().inflate(R.menu.main, menu);
-            restoreActionBar();
-            return true;
-        }
-        return super.onCreateOptionsMenu(menu);
+
+        getMenuInflater().inflate(R.menu.main, menu);
+//        restoreActionBar();
+        return true;
     }
 
     @Override
@@ -178,6 +163,7 @@ public class MainActivity extends ActionBarActivity
         @Override
         protected String doInBackground(String... urls) {
             try {
+
                 return getRestaurants("https://boiling-mesa-3124.herokuapp.com/dining/?format=json");
             } catch (Exception e) {
                 return "Unable to get restaurants information";
@@ -192,6 +178,12 @@ public class MainActivity extends ActionBarActivity
                 for (int i = 0; i < jsonArray.length(); i++) {
                     FoodLocationEntry temp = new FoodLocationEntry();
                     JSONObject jsonObject = (JSONObject) jsonArray.get(i);
+                    if (i == 0) {
+                        temp.setImageUrl(R.drawable.panda);
+                    }
+                    if (i == 1) {
+                        temp.setImageUrl(R.drawable.chick);
+                    }
                     temp.setId(jsonObject.getInt("restaurantID"));
                     temp.setName(jsonObject.getString("restaurantName"));
                     temp.setOwner(jsonObject.getString("owner"));

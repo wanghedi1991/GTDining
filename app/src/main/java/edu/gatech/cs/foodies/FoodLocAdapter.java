@@ -18,10 +18,6 @@ import java.util.ArrayList;
 public class FoodLocAdapter extends RecyclerView.Adapter<FoodLocAdapter.FoodLocViewHolder> {
     private ArrayList<FoodLocationEntry> entries;
     private Context context;
-    public static String RESTAURANT_ID = "RESTAURANT_ID";
-    public static String RESTAURANT_NAME = "RESTAURANT_NAME";
-    public static String RESTAURANT_URI = "RESTAURANT_URI";
-    public static String RESTAUNRANT_LOCATION = "RESTAUNRANT_LOCATION";
 
     public FoodLocAdapter(ArrayList<FoodLocationEntry> entries, Context context) {
         this.entries = entries;
@@ -42,10 +38,10 @@ public class FoodLocAdapter extends RecyclerView.Adapter<FoodLocAdapter.FoodLocV
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(context, RestaurantInfoActivity.class);
-                i.putExtra(RESTAURANT_ID, entries.get(position).getId());
-                i.putExtra(RESTAURANT_NAME, entries.get(position).getName());
-                i.putExtra(RESTAURANT_URI, entries.get(position).getImageUrl());
-                i.putExtra(RESTAUNRANT_LOCATION, false);
+                i.putExtra(Constants.RESTAURANT_ID, entries.get(position).getId());
+                i.putExtra(Constants.RESTAURANT_NAME, entries.get(position).getName());
+                i.putExtra(Constants.RESTAURANT_URI, entries.get(position).getImageUrl());
+                i.putExtra(Constants.RESTAUNRANT_LOCATION, false);
                 context.startActivity(i);
             }
         });
@@ -55,10 +51,10 @@ public class FoodLocAdapter extends RecyclerView.Adapter<FoodLocAdapter.FoodLocV
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(context, RestaurantInfoActivity.class);
-                i.putExtra(RESTAURANT_ID, entries.get(position).getId());
-                i.putExtra(RESTAURANT_NAME, entries.get(position).getName());
-                i.putExtra(RESTAURANT_URI, entries.get(position).getImageUrl());
-                i.putExtra(RESTAUNRANT_LOCATION, true);
+                i.putExtra(Constants.RESTAURANT_ID, entries.get(position).getId());
+                i.putExtra(Constants.RESTAURANT_NAME, entries.get(position).getName());
+                i.putExtra(Constants.RESTAURANT_URI, entries.get(position).getImageUrl());
+                i.putExtra(Constants.RESTAUNRANT_LOCATION, true);
                 context.startActivity(i);
             }
         });

@@ -13,6 +13,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.app.NavUtils;
@@ -30,6 +32,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -74,10 +77,10 @@ public class RestaurantInfoActivity extends ActionBarActivity implements MenuFra
         context = this;
 
         Intent intent = getIntent();
-        entry.setId(intent.getIntExtra(FoodLocAdapter.RESTAURANT_ID, -1));
-        entry.setName(intent.getStringExtra(FoodLocAdapter.RESTAURANT_NAME));
-        entry.setImageUrl(intent.getIntExtra(FoodLocAdapter.RESTAURANT_URI, -1));
-        goToLocation = intent.getBooleanExtra(FoodLocAdapter.RESTAUNRANT_LOCATION, false);
+        entry.setId(intent.getIntExtra(Constants.RESTAURANT_ID, -1));
+        entry.setName(intent.getStringExtra(Constants.RESTAURANT_NAME));
+        entry.setImageUrl(intent.getIntExtra(Constants.RESTAURANT_URI, -1));
+        goToLocation = intent.getBooleanExtra(Constants.RESTAUNRANT_LOCATION, false);
 
 
         actionBar.setTitle(entry.getName());
@@ -85,16 +88,18 @@ public class RestaurantInfoActivity extends ActionBarActivity implements MenuFra
         mViewPager = (ViewPager) findViewById(R.id.pager);
 
 
-        mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-            @Override
-            public void onPageSelected(int position) {
-                actionBar.setSelectedNavigationItem(position);
-            }
-        });
+
 
 
         progressDialog = new ProgressDialog(this, ProgressDialog.STYLE_SPINNER);
-        new GetRestaurantInfo().execute(entry.getId() + "");
+        ConnectivityManager connMgr = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnected()) {
+            new GetRestaurantInfo().execute(entry.getId() + "");
+        } else {
+            Toast.makeText(this, "No Internet Access. Please Check Your Connection", Toast.LENGTH_SHORT).show();
+        }
     }
 
 
@@ -202,9 +207,7 @@ public class RestaurantInfoActivity extends ActionBarActivity implements MenuFra
 
                 mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
                 mViewPager.setAdapter(mSectionsPagerAdapter);
-                if (goToLocation) {
-                    mViewPager.setCurrentItem(1);
-                }
+
                 for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
                     actionBar.addTab(
                             actionBar.newTab()
@@ -225,6 +228,15 @@ public class RestaurantInfoActivity extends ActionBarActivity implements MenuFra
 
                                         }
                                     }));
+                }
+                mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+                    @Override
+                    public void onPageSelected(int position) {
+                        actionBar.setSelectedNavigationItem(position);
+                    }
+                });
+                if (goToLocation) {
+                    mViewPager.setCurrentItem(1);
                 }
                 locationFragment.setAddress(address);
                 locationFragment.setPhone(phone);
