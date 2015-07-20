@@ -1,7 +1,10 @@
 package edu.gatech.cs.foodies;
 
+import android.animation.Animator;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.SharedPreferences;
+import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -13,6 +16,9 @@ import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,7 +26,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,6 +45,10 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Set;
 
 
 public class MainActivity extends ActionBarActivity
@@ -41,43 +57,115 @@ public class MainActivity extends ActionBarActivity
 
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private RecyclerView restaurantList;
+    private RecyclerView favoriteList;
     private CharSequence mTitle;
     Context context;
     ProgressDialog progressDialog;
+    private GoogleApiClient googleApiClient;
+    private Location myLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        buildGoogleApiClient();
+        googleApiClient.connect();
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
-
-        // Set up the drawer.
         DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mNavigationDrawerFragment.setUp(R.id.navigation_drawer, drawerLayout);
         drawerLayout.closeDrawers();
         restaurantList = (RecyclerView) findViewById(R.id.nearby_list);
-//        favoriteList = (RecyclerView) findViewById(R.id.favorite_list);
-
-
+        favoriteList = (RecyclerView) findViewById(R.id.favorite_list);
         restaurantList.setLayoutManager(new LinearLayoutManager(this));
-//        favoriteList.setLayoutManager(new LinearLayoutManager(this));
-//        FoodLocAdapter nearbyAdapter = new FoodLocAdapter(entries0,this);
-//        FoodLocAdapter favoriteAdapter = new FoodLocAdapter(entries1, this);
-//        favoriteList.setAdapter(favoriteAdapter);
+        favoriteList.setLayoutManager(new LinearLayoutManager(this));
         restaurantList.setItemAnimator(new DefaultItemAnimator());
-//        favoriteList.setItemAnimator(new DefaultItemAnimator());
-        Button button = (Button) findViewById(R.id.search_button);
-        button.setOnClickListener(new View.OnClickListener() {
+        favoriteList.setItemAnimator(new DefaultItemAnimator());
+        favoriteList.setVisibility(View.GONE);
+        final Button toggle = (Button) findViewById(R.id.toggle_favorite);
+        toggle.setText("Show Favorites");
+        toggle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (restaurantList.getVisibility() == View.VISIBLE) {
+                    restaurantList.animate().translationY(restaurantList.getHeight()).alpha(0).setListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            restaurantList.setVisibility(View.GONE);
+                            favoriteList.setVisibility(View.VISIBLE);
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animation) {
+
+
+                        }
+                    });
+                    toggle.setText("Hide Favorites");
+                } else {
+                    restaurantList.animate().translationY(0).alpha(1.0f).setListener(new Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animation) {
+                            restaurantList.setVisibility(View.VISIBLE);
+                            favoriteList.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animation) {
+                        }
+                    });
+
+                    toggle.setText("Show Favorites");
+                }
+            }
+        });
+        ((EditText) findViewById(R.id.search_text)).addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                ((FoodLocAdapter) restaurantList.getAdapter()).getFilter().filter(s);
+                ((FoodLocAdapter) favoriteList.getAdapter()).getFilter().filter(s);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
 
             }
         });
         context = this;
         progressDialog = new ProgressDialog(this, ProgressDialog.STYLE_SPINNER);
+        progressDialog.setMessage("Loading data....");
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         ConnectivityManager connMgr = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
@@ -110,13 +198,6 @@ public class MainActivity extends ActionBarActivity
                 break;
         }
     }
-
-//    public void restoreActionBar() {
-//        ActionBar actionBar = getSupportActionBar();
-//        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-//        actionBar.setDisplayShowTitleEnabled(true);
-//        actionBar.setTitle(mTitle);
-//    }
 
 
     @Override
@@ -156,7 +237,6 @@ public class MainActivity extends ActionBarActivity
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressDialog.setMessage("Loading data....");
             progressDialog.show();
         }
 
@@ -164,7 +244,7 @@ public class MainActivity extends ActionBarActivity
         protected String doInBackground(String... urls) {
             try {
 
-                return getRestaurants("https://boiling-mesa-3124.herokuapp.com/dining/?format=json");
+                return getRestaurants("https://abracadabrant-fromage-4658.herokuapp.com/resid/?format=json");
             } catch (Exception e) {
                 return "Unable to get restaurants information";
             }
@@ -174,25 +254,45 @@ public class MainActivity extends ActionBarActivity
         protected void onPostExecute(String s) {
             try {
                 JSONArray jsonArray = new JSONArray(s);
+
+                SharedPreferences sharedPreferences = getSharedPreferences(Constants.APP_NAME, 0);
+                Set<String> favorites = sharedPreferences.getStringSet(Constants.FAVORITE_LIST, new HashSet<String>());
                 ArrayList<FoodLocationEntry> restaurants = new ArrayList<>();
+                ArrayList<FoodLocationEntry> favoriteArray = new ArrayList<>();
                 for (int i = 0; i < jsonArray.length(); i++) {
                     FoodLocationEntry temp = new FoodLocationEntry();
                     JSONObject jsonObject = (JSONObject) jsonArray.get(i);
-                    if (i == 0) {
-                        temp.setImageUrl(R.drawable.panda);
-                    }
-                    if (i == 1) {
-                        temp.setImageUrl(R.drawable.chick);
-                    }
-                    temp.setId(jsonObject.getInt("restaurantID"));
-                    temp.setName(jsonObject.getString("restaurantName"));
-                    temp.setOwner(jsonObject.getString("owner"));
+                    int id = jsonObject.getJSONObject("usermap").getInt("resid");
+                    temp.setId(id);
+                    temp.setName(jsonObject.getString("name"));
+                    temp.setImageUrl(jsonObject.getString("logo"));
+                    Location restaurantLocation = new Location("");
+                    restaurantLocation.setLatitude(jsonObject.getJSONObject("usermap").getJSONObject("loc").getDouble("latitude"));
+                    restaurantLocation.setLongitude(jsonObject.getJSONObject("usermap").getJSONObject("loc").getDouble("longitude"));
+                    temp.setLocation(restaurantLocation);
                     restaurants.add(temp);
+                    if (favorites.contains(id + "")) {
+                        favoriteArray.add(temp);
+                    }
                 }
+                Collections.sort(restaurants, new Comparator<FoodLocationEntry>() {
+                    @Override
+                    public int compare(FoodLocationEntry firstLoc, FoodLocationEntry secondLoc) {
+                        if (myLocation != null) {
+                            double distance0 = firstLoc.getLocation().distanceTo(myLocation);
+                            double distance1 = secondLoc.getLocation().distanceTo(myLocation);
+                            return Double.compare(distance0, distance1);
+                        }
+                        return 0;
+                    }
+                });
                 FoodLocAdapter adapter = new FoodLocAdapter(restaurants, context);
-                progressDialog.dismiss();
+                FoodLocAdapter adapter1 = new FoodLocAdapter(favoriteArray, context);
                 restaurantList.setAdapter(adapter);
+                favoriteList.setAdapter(adapter1);
                 adapter.notifyDataSetChanged();
+                adapter1.notifyDataSetChanged();
+                progressDialog.dismiss();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -224,5 +324,29 @@ public class MainActivity extends ActionBarActivity
                 }
             }
         }
+    }
+
+    protected synchronized void buildGoogleApiClient() {
+        googleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+                    @Override
+                    public void onConnected(Bundle bundle) {
+                        myLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+                    }
+
+                    @Override
+                    public void onConnectionSuspended(int i) {
+
+                    }
+                })
+                .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
+                    @Override
+                    public void onConnectionFailed(ConnectionResult connectionResult) {
+                        Log.e("Location Log", connectionResult.toString());
+                        Toast.makeText(MainActivity.this, "Location Service not available", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addApi(LocationServices.API)
+                .build();
     }
 }

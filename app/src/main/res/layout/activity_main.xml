@@ -16,16 +16,17 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content">
 
+            <ImageView
+                android:src="@drawable/search"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginLeft="13dp"
+                android:layout_marginRight="3dp"
+                android:layout_marginTop="10dp" />
             <EditText
                 android:id="@+id/search_text"
                 android:layout_weight="1"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content" />
-
-            <Button
-                android:id="@+id/search_button"
-                android:text="@string/search"
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </LinearLayout>
 
@@ -47,12 +48,18 @@
         <!--android:layout_width="fill_parent"-->
         <!--android:layout_height="wrap_content" />-->
 
-        <!--<android.support.v7.widget.RecyclerView-->
-        <!--android:id="@+id/favorite_list"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_weight="1"-->
-        <!--android:layout_height="0dp"-->
-        <!--tools:context=".MainActivity" />-->
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/favorite_list"
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:layout_height="0dp"
+            tools:context=".MainActivity" />
+
+        <Button
+            android:id="@+id/toggle_favorite"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/background_light" />
 
     </LinearLayout>
 

@@ -1,34 +1,26 @@
 package edu.gatech.cs.foodies;
 
+import android.location.Location;
+
 /**
  * Created by Hedi Wang on 2015/6/18.
  */
 public class FoodLocationEntry {
     private int id;
     private String name;
-    private int imageUrl;
-    private String owner;
+    private String imageUrl;
+    private Location location;
 
     public FoodLocationEntry() {
         id = -1;
         name = "";
-        imageUrl = R.drawable.panda;
-        owner = "";
+        imageUrl = "";
     }
 
-    public FoodLocationEntry(int id, String name, int imageUrl, String owner) {
+    public FoodLocationEntry(int id, String name, String imageUrl, String owner) {
         this.id = id;
         this.name = name;
         this.imageUrl = imageUrl;
-        this.owner = owner;
-    }
-
-    public String getOwner() {
-        return owner;
-    }
-
-    public void setOwner(String owner) {
-        this.owner = owner;
     }
 
     public int getId() {
@@ -47,11 +39,19 @@ public class FoodLocationEntry {
         this.name = name;
     }
 
-    public int getImageUrl() {
+    public String getImageUrl() {
         return imageUrl;
     }
 
-    public void setImageUrl(int imageUrl) {
+    public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
     }
 }

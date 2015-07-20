@@ -22,7 +22,7 @@ import android.widget.TextView;
 public class MenuFragment extends Fragment {
 
 
-    private int id;
+    private String menuUrl;
     private WebView webView;
 
     /**
@@ -36,10 +36,10 @@ public class MenuFragment extends Fragment {
      */
     private MenuEntryAdapter mAdapter;
 
-    public static MenuFragment newInstance(int id) {
+    public static MenuFragment newInstance(String menuUrl) {
         MenuFragment fragment = new MenuFragment();
         Bundle args = new Bundle();
-        args.putInt(Constants.RESTAURANT_ID, id);
+        args.putString(Constants.RESTAURANT_MENU_URL, menuUrl);
         fragment.setArguments(args);
         return fragment;
     }
@@ -56,7 +56,7 @@ public class MenuFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            id = getArguments().getInt(Constants.RESTAURANT_ID);
+            menuUrl = getArguments().getString(Constants.RESTAURANT_MENU_URL);
         }
 
 
@@ -77,13 +77,7 @@ public class MenuFragment extends Fragment {
         webSettings.setUseWideViewPort(true);
         webSettings.setLoadWithOverviewMode(true);
         webView.setWebChromeClient(new WebChromeClient());
-        if (id == 1) {
-
-            webView.loadUrl("https://www.pandaexpress.com/menu");
-        }
-        if (id == 2) {
-            webView.loadUrl("https://docs.google.com/gview?embedded=true&url=https://www.gatechdining.com/images/ChickFilA%20Menu_tcm251-68215.pdf");
-        }
+        webView.loadUrl(menuUrl);
         return view;
     }
 

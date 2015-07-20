@@ -6,13 +6,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.location.Location;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -26,24 +27,12 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -57,7 +46,8 @@ public class RestaurantInfoActivity extends ActionBarActivity implements MenuFra
     double latitude;
     double longtitude;
     String address;
-    String phone;
+    String imageUrl;
+    String menuUrl;
     FoodLocationEntry entry;
     MenuFragment menuFragment;
     LocationFragment locationFragment;
@@ -79,16 +69,12 @@ public class RestaurantInfoActivity extends ActionBarActivity implements MenuFra
         Intent intent = getIntent();
         entry.setId(intent.getIntExtra(Constants.RESTAURANT_ID, -1));
         entry.setName(intent.getStringExtra(Constants.RESTAURANT_NAME));
-        entry.setImageUrl(intent.getIntExtra(Constants.RESTAURANT_URI, -1));
         goToLocation = intent.getBooleanExtra(Constants.RESTAUNRANT_LOCATION, false);
 
 
         actionBar.setTitle(entry.getName());
 
         mViewPager = (ViewPager) findViewById(R.id.pager);
-
-
-
 
 
         progressDialog = new ProgressDialog(this, ProgressDialog.STYLE_SPINNER);
@@ -103,12 +89,20 @@ public class RestaurantInfoActivity extends ActionBarActivity implements MenuFra
     }
 
 
-    //    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        getMenuInflater().inflate(R.menu.menu_restaurant_info, menu);
-//        return true;
-//    }
-//
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_restaurant_info, menu);
+        MenuItem item = menu.findItem(R.id.add_favorite);
+        SharedPreferences sharedPreferences = getSharedPreferences(Constants.APP_NAME, 0);
+        Set<String> favorites = sharedPreferences.getStringSet(Constants.FAVORITE_LIST, new HashSet<String>());
+        if (!favorites.contains(entry.getId() + "")) {
+            item.setTitle("Like");
+        } else {
+            item.setTitle("Unlike");
+        }
+        return true;
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -116,6 +110,28 @@ public class RestaurantInfoActivity extends ActionBarActivity implements MenuFra
         if (id == R.id.home) {
             NavUtils.navigateUpFromSameTask(this);
             return true;
+        }
+
+        if (id == R.id.add_favorite) {
+
+            SharedPreferences sharedPreferences = getSharedPreferences(Constants.APP_NAME, 0);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            Set<String> favorites = sharedPreferences.getStringSet(Constants.FAVORITE_LIST, new HashSet<String>());
+            if (!favorites.contains(entry.getId() + "")) {
+                Set<String> editedFavorites = new HashSet<>(favorites);
+                editedFavorites.add(entry.getId() + "");
+                editor.putStringSet(Constants.FAVORITE_LIST, editedFavorites);
+                editor.commit();
+                item.setTitle("Unlike");
+                Toast.makeText(this, "Added to Favorites", Toast.LENGTH_SHORT).show();
+            } else {
+                Set<String> editedFavorites = new HashSet<>(favorites);
+                editedFavorites.remove(entry.getId() + "");
+                editor.putStringSet(Constants.FAVORITE_LIST, editedFavorites);
+                editor.commit();
+                item.setTitle("Like");
+                Toast.makeText(this, "Removed from Favorites", Toast.LENGTH_SHORT).show();
+            }
         }
 
         return super.onOptionsItemSelected(item);
@@ -147,12 +163,12 @@ public class RestaurantInfoActivity extends ActionBarActivity implements MenuFra
         public Fragment getItem(int position) {
             if (position == 0) {
                 if (menuFragment == null) {
-                    menuFragment = MenuFragment.newInstance(entry.getId());
+                    menuFragment = MenuFragment.newInstance(menuUrl);
                 }
                 return menuFragment;
             } else {
                 if (locationFragment == null) {
-                    locationFragment = LocationFragment.newInstance(context, address, phone, latitude, longtitude);
+                    locationFragment = LocationFragment.newInstance(context, address, latitude, longtitude, imageUrl);
                 }
                 return locationFragment;
             }
@@ -199,12 +215,12 @@ public class RestaurantInfoActivity extends ActionBarActivity implements MenuFra
         protected void onPostExecute(String s) {
             try {
                 JSONObject jsonObject = new JSONObject(s);
-                address = jsonObject.getString("address");
-                phone = jsonObject.getString("phone");
-                String[] loc = jsonObject.getString("location").split(",");
-                latitude = Double.parseDouble(loc[0]);
-                longtitude = Double.parseDouble(loc[1]);
-
+                JSONObject usermap = jsonObject.getJSONObject("usermap");
+                address = usermap.getJSONObject("loc").getString("address");
+                latitude = usermap.getJSONObject("loc").getDouble("latitude");
+                longtitude = usermap.getJSONObject("loc").getDouble("longitude");
+                imageUrl = jsonObject.getString("logo");
+                menuUrl = jsonObject.getString("menu");
                 mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
                 mViewPager.setAdapter(mSectionsPagerAdapter);
 
@@ -239,8 +255,8 @@ public class RestaurantInfoActivity extends ActionBarActivity implements MenuFra
                     mViewPager.setCurrentItem(1);
                 }
                 locationFragment.setAddress(address);
-                locationFragment.setPhone(phone);
                 locationFragment.setLatLng(new LatLng(latitude, longtitude));
+                locationFragment.setImageUrl(imageUrl);
                 progressDialog.dismiss();
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -250,7 +266,7 @@ public class RestaurantInfoActivity extends ActionBarActivity implements MenuFra
         private String getRestaurantInfo(String id) throws IOException {
             InputStream is = null;
             try {
-                URL url = new URL("https://boiling-mesa-3124.herokuapp.com/info/" + id + "/?format=json");
+                URL url = new URL("https://abracadabrant-fromage-4658.herokuapp.com/resid/" + id + "/?format=json");
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setReadTimeout(10000 /* milliseconds */);
                 conn.setConnectTimeout(15000 /* milliseconds */);

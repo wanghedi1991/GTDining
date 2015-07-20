@@ -2,7 +2,6 @@ package edu.gatech.cs.foodies;
 
 import android.app.Activity;
 import android.content.Context;
-import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -14,8 +13,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -32,19 +29,19 @@ public class LocationFragment extends Fragment {
 
     private Context context;
     private String address;
-    private String phone;
     private LatLng latLng;
+    private String imageUrl;
     private OnFragmentInteractionListener mListener;
     private static View view;
 
-    public static LocationFragment newInstance(Context context, String address, String phone, double latitude, double longitude) {
+    public static LocationFragment newInstance(Context context, String address, double latitude, double longitude, String imageUrl) {
         LocationFragment fragment = new LocationFragment();
         Bundle args = new Bundle();
         fragment.setContext(context);
         args.putString(Constants.RESTAURANT_ADDRESS, address);
-        args.putString(Constants.RESTAURANT_PHONE, phone);
         args.putDouble(Constants.RESTAURANT_LATITUDE, latitude);
         args.putDouble(Constants.RESTAURANT_LONGITUDE, longitude);
+        args.putString(Constants.RESTAURANT_ICON_URL, imageUrl);
         return fragment;
     }
 
@@ -66,8 +63,8 @@ public class LocationFragment extends Fragment {
         if (getArguments() != null) {
             Bundle args = getArguments();
             address = args.getString(Constants.RESTAURANT_ADDRESS);
-            phone = args.getString(Constants.RESTAURANT_PHONE);
             latLng = new LatLng(args.getDouble(Constants.RESTAURANT_LATITUDE), args.getDouble(Constants.RESTAURANT_LONGITUDE));
+            imageUrl = args.getString(Constants.RESTAURANT_ICON_URL);
         }
     }
 
@@ -90,9 +87,20 @@ public class LocationFragment extends Fragment {
                     googleMap.setMyLocationEnabled(true);
                     if (latLng != null) {
                         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
-                        googleMap.addMarker(new MarkerOptions().position(latLng));
+                        MarkerOptions markerOptions = new MarkerOptions().position(latLng);
+                        googleMap.addMarker(markerOptions);
                     }
-                    googleMap.setInfoWindowAdapter(new LocationInfoAdapter(context, address, phone));
+                    googleMap.setInfoWindowAdapter(new LocationInfoAdapter(context, address, imageUrl));
+                    googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+                        @Override
+                        public void onInfoWindowClick(Marker marker) {
+                            if (marker.isInfoWindowShown()) {
+                                marker.hideInfoWindow();
+                            } else {
+                                marker.showInfoWindow();
+                            }
+                        }
+                    });
                 }
             });
         } catch (Exception e) {
@@ -142,19 +150,19 @@ public class LocationFragment extends Fragment {
         this.address = address;
     }
 
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
     public LatLng getLatLng() {
         return latLng;
     }
 
     public void setLatLng(LatLng latLng) {
         this.latLng = latLng;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }
