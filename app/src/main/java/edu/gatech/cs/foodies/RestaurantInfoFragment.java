@@ -32,15 +32,15 @@ public class RestaurantInfoFragment extends Fragment {
         RestaurantInfoFragment fragment = new RestaurantInfoFragment();
         Bundle args = new Bundle();
         args.putString(Constants.RESTAURANT_ICON_URL, imgUrl);
-        args.putString(Constants.RESTAUNRANT_LOCATION, imgUrl);
-        args.putString(Constants.RESTAURANT_NAME, imgUrl);
-        args.putString(Constants.MONDAY, imgUrl);
-        args.putString(Constants.TUESDAY, imgUrl);
-        args.putString(Constants.WEDNESDAY, imgUrl);
-        args.putString(Constants.THURSDAY, imgUrl);
-        args.putString(Constants.FRIDAY, imgUrl);
-        args.putString(Constants.SATURDAY, imgUrl);
-        args.putString(Constants.SUNDAY, imgUrl);
+        args.putString(Constants.RESTAUNRANT_LOCATION, name);
+        args.putString(Constants.RESTAURANT_NAME, detailLocation);
+        args.putString(Constants.MONDAY, monday);
+        args.putString(Constants.TUESDAY, tuesday);
+        args.putString(Constants.WEDNESDAY, wednesday);
+        args.putString(Constants.THURSDAY, thursday);
+        args.putString(Constants.FRIDAY, friday);
+        args.putString(Constants.SATURDAY, saturday);
+        args.putString(Constants.SUNDAY, sunday);
         fragment.setArguments(args);
         return fragment;
     }
@@ -93,7 +93,7 @@ public class RestaurantInfoFragment extends Fragment {
             ((TextView) view.findViewById(R.id.sunday)).setText(sunday);
         }
 
-        return inflater.inflate(R.layout.fragment_restaurant_info, container, false);
+        return view;
     }
 
 
@@ -140,28 +140,5 @@ public class RestaurantInfoFragment extends Fragment {
 
     }
 
-    public void updateInfo(String imgUrl, String name, String detailLocation, String monday, String tuesday, String wednesday, String thursday, String friday, String saturday, String sunday) {
-        View view = getView();
-        this.imgUrl = imgUrl;
-        this.name = name;
-        this.detailLocation = detailLocation;
-        this.monday = monday;
-        this.tuesday = tuesday;
-        this.wednesday = wednesday;
-        this.thursday = thursday;
-        this.friday = friday;
-        this.saturday = saturday;
-        this.sunday = sunday;
-        new GettingIconTask((ImageView) view.findViewById(R.id.restaurant_icon)).execute(imgUrl);
-        ((TextView) view.findViewById(R.id.restaurant_name)).setText(name);
-        ((TextView) view.findViewById(R.id.detail_location)).setText(detailLocation);
-        ((TextView) view.findViewById(R.id.monday)).setText(monday);
-        ((TextView) view.findViewById(R.id.tuesday)).setText(tuesday);
-        ((TextView) view.findViewById(R.id.wednesday)).setText(wednesday);
-        ((TextView) view.findViewById(R.id.thursday)).setText(thursday);
-        ((TextView) view.findViewById(R.id.friday)).setText(friday);
-        ((TextView) view.findViewById(R.id.saturday)).setText(saturday);
-        ((TextView) view.findViewById(R.id.sunday)).setText(sunday);
-    }
 
 }

@@ -164,20 +164,6 @@ public class MainActivity extends ActionBarActivity
 //                .commit();
     }
 
-    public void onSectionAttached(int number) {
-        switch (number) {
-            case 1:
-                mTitle = getString(R.string.title_drawer_search);
-                break;
-            case 2:
-                mTitle = getString(R.string.title_drawer_promo);
-                break;
-            case 3:
-                mTitle = getString(R.string.title_drawer_home);
-                break;
-        }
-    }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

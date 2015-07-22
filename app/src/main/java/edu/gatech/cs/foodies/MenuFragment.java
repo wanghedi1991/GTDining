@@ -84,23 +84,19 @@ public class MenuFragment extends Fragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-//        try {
-//            mListener = (OnFragmentInteractionListener) activity;
-//        } catch (ClassCastException e) {
-//            throw new ClassCastException(activity.toString()
-//                    + " must implement OnFragmentInteractionListener");
-//        }
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-//        mListener = null;
     }
 
 
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(String id);
+    public String getMenuUrl() {
+        return menuUrl;
     }
 
+    public void setMenuUrl(String menuUrl) {
+        this.menuUrl = menuUrl;
+    }
 }

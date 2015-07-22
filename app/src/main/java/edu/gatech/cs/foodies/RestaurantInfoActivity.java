@@ -29,6 +29,8 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -37,10 +39,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 
-public class RestaurantInfoActivity extends ActionBarActivity implements MenuFragment.OnFragmentInteractionListener, LocationFragment.OnFragmentInteractionListener {
-
-    SectionsPagerAdapter mSectionsPagerAdapter;
-    ViewPager mViewPager;
+public class RestaurantInfoActivity extends ActionBarActivity {
 
 
     double latitude;
@@ -48,35 +47,97 @@ public class RestaurantInfoActivity extends ActionBarActivity implements MenuFra
     String address;
     String imageUrl;
     String menuUrl;
+    String name;
+    String detailLocation;
+    String monday;
+    String tuesday;
+    String wednesday;
+    String thursday;
+    String friday;
+    String saturday;
+    String sunday;
+
     FoodLocationEntry entry;
+
     MenuFragment menuFragment;
     LocationFragment locationFragment;
+    RestaurantInfoFragment restaurantInfoFragment;
+
     Context context;
     ProgressDialog progressDialog;
+
     boolean goToLocation;
-    ActionBar actionBar;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_restaurant_info);
         entry = new FoodLocationEntry();
-        actionBar = getSupportActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        actionBar.setDisplayHomeAsUpEnabled(true);
         context = this;
-
+        longtitude = 0;
+        latitude = 0;
+        address = "";
+        imageUrl = "";
+        menuUrl = "";
+        name = "";
+        detailLocation = "";
+        monday = "";
+        tuesday = "";
+        wednesday = "";
+        thursday = "";
+        friday = "";
+        saturday = "";
+        sunday = "";
+        context = this;
         Intent intent = getIntent();
         entry.setId(intent.getIntExtra(Constants.RESTAURANT_ID, -1));
         entry.setName(intent.getStringExtra(Constants.RESTAURANT_NAME));
         goToLocation = intent.getBooleanExtra(Constants.RESTAUNRANT_LOCATION, false);
 
-
-        actionBar.setTitle(entry.getName());
-
-        mViewPager = (ViewPager) findViewById(R.id.pager);
-
-
+        if (menuFragment == null) {
+            menuFragment = MenuFragment.newInstance(menuUrl);
+        }
+        if (restaurantInfoFragment == null) {
+            restaurantInfoFragment = RestaurantInfoFragment.newInstance(imageUrl, name, detailLocation, monday, tuesday, wednesday, thursday, friday, saturday, sunday);
+        }
+        if (locationFragment == null) {
+            locationFragment = LocationFragment.newInstance(context, address, latitude, longtitude, imageUrl);
+        }
+        Button info = (Button) findViewById(R.id.restaurant_info);
+        Button menu = (Button) findViewById(R.id.restaurant_menu);
+        Button locationButton = (Button) findViewById(R.id.restaurant_location);
+        info.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.info_activity_container, RestaurantInfoFragment.newInstance(imageUrl, name, detailLocation, monday, tuesday, wednesday, thursday, friday, saturday, sunday));
+                fragmentTransaction.commit();
+            }
+        });
+        menu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (menuFragment != null) {
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction.replace(R.id.info_activity_container, MenuFragment.newInstance(menuUrl));
+                    fragmentTransaction.commit();
+                }
+            }
+        });
+        locationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (locationFragment != null) {
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction.replace(R.id.info_activity_container, locationFragment);
+                    fragmentTransaction.commit();
+                }
+            }
+        });
         progressDialog = new ProgressDialog(this, ProgressDialog.STYLE_SPINNER);
         ConnectivityManager connMgr = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -137,62 +198,6 @@ public class RestaurantInfoActivity extends ActionBarActivity implements MenuFra
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onFragmentInteraction(String id) {
-
-    }
-
-
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-
-    }
-
-    /**
-     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-     * one of the sections/tabs/pages.
-     */
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
-
-        public SectionsPagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-
-        @Override
-        public Fragment getItem(int position) {
-            if (position == 0) {
-                if (menuFragment == null) {
-                    menuFragment = MenuFragment.newInstance(menuUrl);
-                }
-                return menuFragment;
-            } else {
-                if (locationFragment == null) {
-                    locationFragment = LocationFragment.newInstance(context, address, latitude, longtitude, imageUrl);
-                }
-                return locationFragment;
-            }
-        }
-
-        @Override
-        public int getCount() {
-            return 2;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            Locale l = Locale.getDefault();
-            switch (position) {
-                case 0:
-                    return getString(R.string.title_info_menu).toUpperCase(l);
-                case 1:
-                    return getString(R.string.title_info_location).toUpperCase(l);
-            }
-            return null;
-        }
-    }
-
-
     private class GetRestaurantInfo extends AsyncTask<String, Void, String> {
 
         @Override
@@ -221,43 +226,56 @@ public class RestaurantInfoActivity extends ActionBarActivity implements MenuFra
                 longtitude = usermap.getJSONObject("loc").getDouble("longitude");
                 imageUrl = jsonObject.getString("logo");
                 menuUrl = jsonObject.getString("menu");
-                mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-                mViewPager.setAdapter(mSectionsPagerAdapter);
-
-                for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
-                    actionBar.addTab(
-                            actionBar.newTab()
-                                    .setText(mSectionsPagerAdapter.getPageTitle(i))
-                                    .setTabListener(new ActionBar.TabListener() {
-                                        @Override
-                                        public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
-                                            mViewPager.setCurrentItem(tab.getPosition());
-                                        }
-
-                                        @Override
-                                        public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
-
-                                        }
-
-                                        @Override
-                                        public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
-
-                                        }
-                                    }));
+                name = jsonObject.getString("name");
+                detailLocation = usermap.getJSONObject("loc").getString("details");
+                JSONObject hours = usermap.getJSONObject("hours");
+                if (hours.getBoolean("m")) {
+                    monday = hours.getString("open_time_m") + " - " + hours.getString("close_time_m");
+                } else {
+                    monday = "Closed";
                 }
-                mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-                    @Override
-                    public void onPageSelected(int position) {
-                        actionBar.setSelectedNavigationItem(position);
-                    }
-                });
-                if (goToLocation) {
-                    mViewPager.setCurrentItem(1);
+                if (hours.getBoolean("t")) {
+                    tuesday = hours.getString("open_time_t") + " - " + hours.getString("close_time_t");
+                } else {
+                    tuesday = "Closed";
                 }
+                if (hours.getBoolean("m")) {
+                    wednesday = hours.getString("open_time_w") + " - " + hours.getString("close_time_w");
+                } else {
+                    wednesday = "Closed";
+                }
+                if (hours.getBoolean("m")) {
+                    thursday = hours.getString("open_time_r") + " - " + hours.getString("close_time_r");
+                } else {
+                    thursday = "Closed";
+                }
+                if (hours.getBoolean("m")) {
+                    friday = hours.getString("open_time_f") + " - " + hours.getString("close_time_f");
+                } else {
+                    friday = "Closed";
+                }
+                if (hours.getBoolean("m")) {
+                    saturday = hours.getString("open_time_s") + " - " + hours.getString("close_time_s");
+                } else {
+                    saturday = "Closed";
+                }
+                if (hours.getBoolean("m")) {
+                    sunday = hours.getString("open_time_h") + " - " + hours.getString("close_time_h");
+                } else {
+                    sunday = "Closed";
+                }
+
                 if (locationFragment != null) {
                     locationFragment.setAddress(address);
                     locationFragment.setLatLng(new LatLng(latitude, longtitude));
                     locationFragment.setImageUrl(imageUrl);
+                } else {
+                    locationFragment = LocationFragment.newInstance(context, address, latitude, longtitude, imageUrl);
+                }
+                if (goToLocation) {
+                    findViewById(R.id.restaurant_location).performClick();
+                } else {
+                    findViewById(R.id.restaurant_info).performClick();
                 }
                 progressDialog.dismiss();
             } catch (JSONException e) {
@@ -293,3 +311,4 @@ public class RestaurantInfoActivity extends ActionBarActivity implements MenuFra
         }
     }
 }
+
