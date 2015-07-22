@@ -6,4 +6,5 @@
         android:id="@+id/add_favorite"
         android:title="@string/add_favorite"
         app:showAsAction="withText|ifRoom" />
+
 </menu>

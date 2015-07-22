@@ -15,7 +15,7 @@
 
     <string name="add_favorite">Favorite</string>
     <string name="title_activity_restaurant_info">RestaurantInfo</string>
-
+    <string name="title_info_info">Info</string>
     <string name="title_info_menu">Menu</string>
     <string name="title_info_promo">Promotion</string>
     <string name="title_info_location">Location</string>
@@ -31,7 +31,47 @@
     <string name="title_activity_maps">Map</string>
     <string name="address">Address:</string>
     <string name="phone_number">Phone:</string>
+    <string name="toggle">Toggle</string>
+    <string name="filter">Filter</string>
+    <string name="payment">Payment:</string>
+    <string name="dining_dollar">Dinning Dollars</string>
+    <string name="meal_plan">Meal Plan</string>
+    <string name="buzzfund">Buzzfund</string>
+    <string name="cost">Cost:</string>
+    <string name="cancel">Cancel</string>
+    <string name="detail_location">Location:</string>
+    <string name="hours">Hours:</string>
+    <string name="monday">Monday:</string>
+    <string name="tuesday">Tuesday:</string>
+    <string name="wednesday">Wednesday:</string>
+    <string name="thursday">Thursday:</string>
+    <string name="friday">Friday:</string>
+    <string name="satureday">Saturday:</string>
+    <string name="sunday">Sunday:</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
+    <string-array name="cost_array">
+        <item> </item>
+        <item>$</item>
+        <item>$$</item>
+        <item>$$$</item>
+    </string-array>
+
+    <string-array name="guided_search_top">
+        <item>Cuisine</item>
+        <item>Location</item>
+    </string-array>
+    <string-array name="guided_search_cuisine">
+        <item>Chinese</item>
+        <item>American</item>
+        <item>Mexican</item>
+        <item>Indian</item>
+        <item>Fast</item>
+        <item>Japanese</item>
+    </string-array>
+    <string-array name="guided_search_location">
+        <item>StudentCenter</item>
+        <item>TechSquare</item>
+        <item>DiningHall</item>
+    </string-array>
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

@@ -254,9 +254,11 @@ public class RestaurantInfoActivity extends ActionBarActivity implements MenuFra
                 if (goToLocation) {
                     mViewPager.setCurrentItem(1);
                 }
-                locationFragment.setAddress(address);
-                locationFragment.setLatLng(new LatLng(latitude, longtitude));
-                locationFragment.setImageUrl(imageUrl);
+                if (locationFragment != null) {
+                    locationFragment.setAddress(address);
+                    locationFragment.setLatLng(new LatLng(latitude, longtitude));
+                    locationFragment.setImageUrl(imageUrl);
+                }
                 progressDialog.dismiss();
             } catch (JSONException e) {
                 e.printStackTrace();

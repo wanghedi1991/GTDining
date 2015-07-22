@@ -7,32 +7,32 @@ import android.os.Parcelable;
 /**
  * Created by Hedi Wang on 2015/6/18.
  */
-public class FoodLocationEntry implements Parcelable {
+public class FoodLocationEntry {
     private int id;
     private String name;
     private String imageUrl;
+    private String tag;
     private Location location;
+    private boolean distanceSet;
 
     public FoodLocationEntry() {
         id = -1;
         name = "";
         imageUrl = "";
+        tag = "";
         location = new Location("");
+        distanceSet = false;
     }
 
-    public FoodLocationEntry(int id, String name, String imageUrl, String owner) {
+    public FoodLocationEntry(int id, String name, String imageUrl, String tag) {
         this.id = id;
         this.name = name;
         this.imageUrl = imageUrl;
+        this.tag = tag;
+        distanceSet = false;
     }
 
-    private FoodLocationEntry(Parcel in) {
-        id = in.readInt();
-        name = in.readString();
-        imageUrl = in.readString();
-        location = in.readParcelable(Location.class.getClassLoader());
 
-    }
     public int getId() {
         return id;
     }
@@ -65,29 +65,19 @@ public class FoodLocationEntry implements Parcelable {
         this.location = location;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
+    public String getTag() {
+        return tag;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(id);
-        dest.writeString(name);
-        dest.writeString(imageUrl);
-        dest.writeParcelable(location, 0);
+    public void setTag(String tag) {
+        this.tag = tag;
     }
 
-    public static final Parcelable.Creator<FoodLocationEntry> CREATOR = new Parcelable.Creator<FoodLocationEntry>() {
+    public boolean isDistanceSet() {
+        return distanceSet;
+    }
 
-        @Override
-        public FoodLocationEntry createFromParcel(Parcel source) {
-            return new FoodLocationEntry(source);
-        }
-
-        @Override
-        public FoodLocationEntry[] newArray(int size) {
-            return new FoodLocationEntry[size];
-        }
-    };
+    public void setDistanceSet(boolean distanceSet) {
+        this.distanceSet = distanceSet;
+    }
 }

@@ -6,69 +6,19 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent">
 
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content">
+    <FrameLayout
+        android:id="@+id/restaurant_fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"></FrameLayout>
 
-            <ImageView
-                android:src="@drawable/search"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:layout_marginLeft="13dp"
-                android:layout_marginRight="3dp"
-                android:layout_marginTop="10dp" />
-            <EditText
-                android:id="@+id/search_text"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-
-        <TextView
-            android:text="@string/restaurants"
-            android:gravity="center"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content" />
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/nearby_list"
-            android:layout_width="match_parent"
-            android:layout_weight="1"
-            android:layout_height="0dp"
-            tools:context=".MainActivity" />
-
-        <!--<TextView-->
-        <!--android:text="@string/favourite"-->
-        <!--android:layout_width="fill_parent"-->
-        <!--android:layout_height="wrap_content" />-->
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/favorite_list"
-            android:layout_width="match_parent"
-            android:layout_weight="1"
-            android:layout_height="0dp"
-            tools:context=".MainActivity" />
-
-        <Button
-            android:id="@+id/toggle_favorite"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@android:color/background_light" />
-
-    </LinearLayout>
 
     <fragment
         android:id="@+id/navigation_drawer"
+        android:name="edu.gatech.cs.foodies.NavigationDrawerFragment"
         android:layout_width="@dimen/navigation_drawer_width"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:name="edu.gatech.cs.foodies.NavigationDrawerFragment"
         tools:layout="@layout/fragment_navigation_drawer" />
 
 </android.support.v4.widget.DrawerLayout>

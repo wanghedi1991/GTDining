@@ -27,6 +27,12 @@ public class FoodLocAdapter extends RecyclerView.Adapter<FoodLocAdapter.FoodLocV
     private ArrayList<FoodLocationEntry> entriesCopy;
     private Context context;
 
+    public FoodLocAdapter() {
+        entries = new ArrayList<>();
+        entriesCopy = new ArrayList<>();
+        context = null;
+    }
+
     public FoodLocAdapter(ArrayList<FoodLocationEntry> entries, Context context) {
         this.entries = entries;
         entriesCopy = new ArrayList<>(entries);
@@ -90,9 +96,55 @@ public class FoodLocAdapter extends RecyclerView.Adapter<FoodLocAdapter.FoodLocV
                         if (entry.getName().trim().toLowerCase().contains(constraint.toString().trim().toLowerCase())) {
                             resultEntries.add(entry);
                         }
-                        results.values = resultEntries;
-                        results.count = resultEntries.size();
+                        if (entry.getTag().toLowerCase().contains(constraint.toString().trim().toLowerCase())) {
+
+                            resultEntries.add(entry);
+                        }
+                        Boolean checkTag = false;
+                        if (constraint.toString().contains("tagfilter")) {
+                            checkTag = true;
+                        }
+                        if (checkTag) {
+                            boolean pass = true;
+                            String tags = entry.getTag().trim().toLowerCase();
+                            String filterTag = constraint.toString();
+                            if (filterTag.contains("diningdollar")) {
+                                if (!tags.contains("diningdollar")) {
+                                    pass = false;
+                                }
+                            }
+                            if (filterTag.contains("mealplan")) {
+                                if (!tags.contains("mealplan")) {
+                                    pass = false;
+                                }
+                            }
+                            if (filterTag.contains("buzzfund")) {
+                                if (!tags.contains("buzzfund")) {
+                                    pass = false;
+                                }
+                            }
+                            if (filterTag.contains("cost_1")) {
+                                if (!tags.contains("cost_1")) {
+                                    pass = false;
+                                }
+                            }
+                            if (filterTag.contains("cost_2")) {
+                                if (!tags.contains("cost_2")) {
+                                    pass = false;
+                                }
+                            }
+                            if (filterTag.contains("cost_3")) {
+                                if (!tags.contains("cost_3")) {
+                                    pass = false;
+                                }
+                            }
+                            if (pass) {
+                                resultEntries.add(entry);
+                            }
+                        }
                     }
+                    results.values = resultEntries;
+                    results.count = resultEntries.size();
                 }
                 return results;
             }

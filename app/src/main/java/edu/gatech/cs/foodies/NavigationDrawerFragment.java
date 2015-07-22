@@ -102,9 +102,9 @@ public class NavigationDrawerFragment extends Fragment {
                 android.R.layout.simple_list_item_activated_1,
                 android.R.id.text1,
                 new String[]{
-                        getString(R.string.title_drawer_search),
-                        getString(R.string.title_drawer_promo),
                         getString(R.string.title_drawer_home),
+                        getString(R.string.title_drawer_search),
+                        " ",
                 }));
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerListView;
